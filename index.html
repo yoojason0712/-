@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>KDA Lab</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<div style="background:#1e293b; padding:20px; border-radius:15px; width:420px; margin:auto;">
-  <canvas id="chart"></canvas>
-</div>
+
 <style>
 body {
   background: #0f172a;
@@ -15,54 +12,10 @@ body {
   font-family: Arial;
   text-align: center;
 }
-<select id="map">
-  <option value="split">스플릿</option>
-  <option value="bind">바인드</option>
-  <option value="haven">헤이븐</option>
-  <option value="breeze">브리즈</option>
-  <option value="fracture">프랙처</option>
-  <option value="pearl">펄</option>
-  <option value="lotus">로터스</option>
-</select>
-<select id="agent">
-  <option value="gekko">게코</option>
-  <option value="breach">브리치</option>
-  <option value="sova">소바</option>
-  <option value="skye">스카이</option>
-  <option value="kayo">케이오</option>
-  <option value="teho">테호</option>
-  <option value="fade">페이드</option>
 
-  <option value="deadlock">데드록</option>
-  <option value="vyse">바이스</option>
-  <option value="vyto">비토</option>
-  <option value="cypher">사이퍼</option>
-  <option value="sage">세이지</option>
-  <option value="chamber">체임버</option>
-  <option value="killjoy">킬조이</option>
+h1 { color: #38bdf8; }
 
-  <option value="neon">네온</option>
-  <option value="reyna">레이나</option>
-  <option value="raze">레이즈</option>
-  <option value="iso">아이소</option>
-  <option value="yoru">요루</option>
-  <option value="waylay">웨이레이</option>
-  <option value="jett">제트</option>
-  <option value="phoenix">피닉스</option>
-
-  <option value="mix">믹스</option>
-  <option value="viper">바이퍼</option>
-  <option value="brimstone">브림스톤</option>
-  <option value="astra">아스트라</option>
-  <option value="omen">오멘</option>
-  <option value="clove">클로브</option>
-  <option value="harbor">하버</option>
-</select>
-h1 {
-  color: #38bdf8;
-}
-
-input, button {
+input, select, button {
   padding: 8px;
   margin: 5px;
   border-radius: 10px;
@@ -78,7 +31,7 @@ button {
   background: #1e293b;
   margin: 10px auto;
   padding: 15px;
-  width: 300px;
+  width: 320px;
   border-radius: 15px;
   position: relative;
 }
@@ -90,41 +43,7 @@ button {
   color: red;
   cursor: pointer;
 }
-function render() {
-  list.innerHTML = "";
 
-  const fMode = document.getElementById("filterMode").value;
-  const fAgent = document.getElementById("filterAgent").value;
-  const fMap = document.getElementById("filterMap").value;
-
-  let total = 0;
-  let count = 0;
-
-  const filtered = games.filter(g => {
-    return (fMode === "all" || g.mode === fMode) &&
-           (fAgent === "all" || g.agent === fAgent) &&
-           (fMap === "all" || g.map === fMap);
-  });
-
-  filtered.forEach((g, i) => {
-    total += parseFloat(g.kda);
-    count++;
-
-    list.innerHTML += `
-      <div class="card">
-        <div class="delete" onclick="deleteGame(${i})">X</div>
-        <h3>KDA: ${g.kda}</h3>
-        <p>${g.k} / ${g.d} / ${g.a}</p>
-        <p>🎮 ${g.mode} | 🧍 ${g.agent} | 🗺 ${g.map}</p>
-      </div>
-    `;
-  });
-
-  const avg = count ? (total / count).toFixed(2) : 0;
-  avgEl.innerText = avg;
-
-  drawChart(filtered);
-}
 canvas {
   max-width: 400px;
   height: 200px !important;
@@ -132,64 +51,103 @@ canvas {
 }
 </style>
 </head>
-<h3>필터</h3>
-function drawChart(dataList) {
-  const ctx = document.getElementById("chart");
 
-  const labels = dataList.map((_, i) => i + 1);
-  const data = dataList.map(g => g.kda);
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "KDA",
-        data: data,
-        tension: 0.4
-      }]
-    }
-  });
-}
-<select id="filterMode">
-  <option value="all">전체 모드</option>
-  <option value="rank">랭크</option>
-  <option value="normal">일반</option>
-</select>
-
-<select id="filterAgent">
-  <option value="all">전체 요원</option>
-  <option value="jett">제트</option>
-  <option value="reyna">레이나</option>
-  <option value="sage">세이지</option>
-</select>
-
-<select id="filterMap">
-  <option value="all">전체 맵</option>
-  <option value="bind">바인드</option>
-  <option value="haven">헤이븐</option>
-  <option value="ascent">어센트</option>
-</select>
-
-<button onclick="render()">적용</button>
 <body>
 
 <h1>🎯 KDA Lab</h1>
 
+<!-- 입력 -->
 <div>
   <input id="kills" type="number" placeholder="킬">
   <input id="deaths" type="number" placeholder="데스">
   <input id="assists" type="number" placeholder="어시스트">
+
+  <select id="mode">
+    <option value="rank">랭크</option>
+    <option value="normal">일반</option>
+  </select>
+
+  <!-- 요원 -->
+  <select id="agent">
+    <option value="gekko">게코</option>
+    <option value="breach">브리치</option>
+    <option value="sova">소바</option>
+    <option value="skye">스카이</option>
+    <option value="kayo">케이오</option>
+    <option value="teho">테호</option>
+    <option value="fade">페이드</option>
+
+    <option value="deadlock">데드록</option>
+    <option value="vyse">바이스</option>
+    <option value="vyto">비토</option>
+    <option value="cypher">사이퍼</option>
+    <option value="sage">세이지</option>
+    <option value="chamber">체임버</option>
+    <option value="killjoy">킬조이</option>
+
+    <option value="neon">네온</option>
+    <option value="reyna">레이나</option>
+    <option value="raze">레이즈</option>
+    <option value="iso">아이소</option>
+    <option value="yoru">요루</option>
+    <option value="waylay">웨이레이</option>
+    <option value="jett">제트</option>
+    <option value="phoenix">피닉스</option>
+
+    <option value="mix">믹스</option>
+    <option value="viper">바이퍼</option>
+    <option value="brimstone">브림스톤</option>
+    <option value="astra">아스트라</option>
+    <option value="omen">오멘</option>
+    <option value="clove">클로브</option>
+    <option value="harbor">하버</option>
+  </select>
+
+  <!-- 맵 -->
+  <select id="map">
+    <option value="split">스플릿</option>
+    <option value="bind">바인드</option>
+    <option value="haven">헤이븐</option>
+    <option value="breeze">브리즈</option>
+    <option value="fracture">프랙처</option>
+    <option value="pearl">펄</option>
+    <option value="lotus">로터스</option>
+  </select>
+
   <button onclick="addGame()">추가</button>
+</div>
+
+<!-- 필터 -->
+<div>
+  <select id="filterMode">
+    <option value="all">모드 전체</option>
+    <option value="rank">랭크</option>
+    <option value="normal">일반</option>
+  </select>
+
+  <select id="filterAgent">
+    <option value="all">요원 전체</option>
+  </select>
+
+  <select id="filterMap">
+    <option value="all">맵 전체</option>
+    <option value="split">스플릿</option>
+    <option value="bind">바인드</option>
+    <option value="haven">헤이븐</option>
+    <option value="breeze">브리즈</option>
+    <option value="fracture">프랙처</option>
+    <option value="pearl">펄</option>
+    <option value="lotus">로터스</option>
+  </select>
+
+  <button onclick="render()">필터 적용</button>
 </div>
 
 <button onclick="toggleChart()">📊 그래프 보기/숨기기</button>
 
 <h2>평균 KDA: <span id="avg">0</span></h2>
 
-<canvas id="chart" width="300" height="200"></canvas>
+<canvas id="chart"></canvas>
 
 <div id="list"></div>
 
@@ -198,25 +156,26 @@ let games = JSON.parse(localStorage.getItem("games")) || [];
 let chart;
 let show = true;
 
+// 요원 자동 복사해서 필터에도 넣기 (핵심🔥)
+const agentSelect = document.getElementById("agent");
+const filterAgent = document.getElementById("filterAgent");
+
+Array.from(agentSelect.options).forEach(opt => {
+  filterAgent.innerHTML += `<option value="${opt.value}">${opt.text}</option>`;
+});
+
 function save() {
   localStorage.setItem("games", JSON.stringify(games));
 }
-list.innerHTML += `
-  <div class="card">
-    <div class="delete" onclick="deleteGame(${i})">X</div>
-    <h3>KDA: ${g.kda}</h3>
-    <p>${g.k} / ${g.d} / ${g.a}</p>
-    <p>🎮 ${g.mode} | 🧍 ${g.agent} | 🗺 ${g.map}</p>
-  </div>
-`;
+
 function addGame() {
   const k = parseInt(kills.value);
   const d = parseInt(deaths.value);
   const a = parseInt(assists.value);
 
-  const mode = document.getElementById("mode").value;
-  const agent = document.getElementById("agent").value;
-  const map = document.getElementById("map").value;
+  const mode = modeSel.value;
+  const agent = agentSelect.value;
+  const map = mapSel.value;
 
   if (isNaN(k) || isNaN(d) || isNaN(a)) {
     alert("다 입력해");
@@ -238,43 +197,23 @@ function deleteGame(i) {
 
 function toggleChart() {
   show = !show;
-  document.getElementById("chart").style.display = show ? "block" : "none";
+  chartEl.style.display = show ? "block" : "none";
 }
 
-function drawChart() {
-  const ctx = document.getElementById("chart");
-
-  const labels = games.map((_, i) => i + 1);
-  const data = games.map(g => g.kda);
-
+function drawChart(dataList) {
   if (chart) chart.destroy();
 
-  chart = new Chart(ctx, {
+  chart = new Chart(chartEl, {
     type: "line",
     data: {
-      labels: labels,
+      labels: dataList.map((_, i) => i + 1),
       datasets: [{
-        label: "KDA",
-        data: data,
-        borderWidth: 2,
-        tension: 0.4,
-        pointRadius: 4
+        data: dataList.map(g => g.kda),
+        tension: 0.4
       }]
     },
     options: {
-      plugins: {
-        legend: {
-          display: false
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color: "white" }
-        },
-        y: {
-          ticks: { color: "white" }
-        }
-      }
+      plugins: { legend: { display: false } }
     }
   });
 }
@@ -282,9 +221,19 @@ function drawChart() {
 function render() {
   list.innerHTML = "";
 
+  const fMode = filterMode.value;
+  const fAgent = filterAgent.value;
+  const fMap = filterMap.value;
+
+  const filtered = games.filter(g =>
+    (fMode === "all" || g.mode === fMode) &&
+    (fAgent === "all" || g.agent === fAgent) &&
+    (fMap === "all" || g.map === fMap)
+  );
+
   let total = 0;
 
-  games.forEach((g, i) => {
+  filtered.forEach((g, i) => {
     total += parseFloat(g.kda);
 
     list.innerHTML += `
@@ -292,21 +241,31 @@ function render() {
         <div class="delete" onclick="deleteGame(${i})">X</div>
         <h3>KDA: ${g.kda}</h3>
         <p>${g.k} / ${g.d} / ${g.a}</p>
+        <p>🎮 ${g.mode} | 🧍 ${g.agent} | 🗺 ${g.map}</p>
       </div>
     `;
   });
 
-  const avg = games.length ? (total / games.length).toFixed(2) : 0;
-  avgEl.innerText = avg;
+  avgEl.innerText = filtered.length
+    ? (total / filtered.length).toFixed(2)
+    : 0;
 
-  drawChart();
+  drawChart(filtered);
 }
 
 const kills = document.getElementById("kills");
 const deaths = document.getElementById("deaths");
 const assists = document.getElementById("assists");
+
+const modeSel = document.getElementById("mode");
+const mapSel = document.getElementById("map");
+
+const filterMode = document.getElementById("filterMode");
+const filterMap = document.getElementById("filterMap");
+
 const list = document.getElementById("list");
 const avgEl = document.getElementById("avg");
+const chartEl = document.getElementById("chart");
 
 render();
 </script>
