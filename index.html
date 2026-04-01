@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>Valorant Tracker</title>
+<title>KDA Lab</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
@@ -13,7 +15,7 @@ body {
 }
 
 h1 {
-  color: #f43f5e;
+  color: #38bdf8;
 }
 
 input, button {
@@ -24,8 +26,7 @@ input, button {
 }
 
 button {
-  background: #f43f5e;
-  color: white;
+  background: #38bdf8;
   cursor: pointer;
 }
 
@@ -45,12 +46,16 @@ button {
   color: red;
   cursor: pointer;
 }
+
+canvas {
+  margin-top: 20px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🎯 Valorant Tracker</h1>
+<h1>🎯 KDA Lab</h1>
 
 <div>
   <input id="kills" type="number" placeholder="킬">
@@ -59,12 +64,18 @@ button {
   <button onclick="addGame()">추가</button>
 </div>
 
+<button onclick="toggleChart()">📊 그래프 보기/숨기기</button>
+
 <h2>평균 KDA: <span id="avg">0</span></h2>
+
+<canvas id="chart" width="300" height="200"></canvas>
 
 <div id="list"></div>
 
 <script>
 let games = JSON.parse(localStorage.getItem("games")) || [];
+let chart;
+let show = true;
 
 function save() {
   localStorage.setItem("games", JSON.stringify(games));
@@ -93,6 +104,32 @@ function deleteGame(i) {
   render();
 }
 
+function toggleChart() {
+  show = !show;
+  document.getElementById("chart").style.display = show ? "block" : "none";
+}
+
+function drawChart() {
+  const ctx = document.getElementById("chart");
+
+  const labels = games.map((_, i) => i + 1);
+  const data = games.map(g => g.kda);
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'KDA 변화',
+        data: data,
+        tension: 0.3
+      }]
+    }
+  });
+}
+
 function render() {
   list.innerHTML = "";
 
@@ -111,8 +148,16 @@ function render() {
   });
 
   const avg = games.length ? (total / games.length).toFixed(2) : 0;
-  document.getElementById("avg").innerText = avg;
+  avgEl.innerText = avg;
+
+  drawChart();
 }
+
+const kills = document.getElementById("kills");
+const deaths = document.getElementById("deaths");
+const assists = document.getElementById("assists");
+const list = document.getElementById("list");
+const avgEl = document.getElementById("avg");
 
 render();
 </script>
