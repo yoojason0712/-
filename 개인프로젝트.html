@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Valorant Tracker</title>
+
+<style>
+body {
+  background: #0f172a;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+
+h1 {
+  color: #f43f5e;
+}
+
+input, button {
+  padding: 8px;
+  margin: 5px;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  background: #f43f5e;
+  color: white;
+  cursor: pointer;
+}
+
+.card {
+  background: #1e293b;
+  margin: 10px auto;
+  padding: 15px;
+  width: 300px;
+  border-radius: 15px;
+  position: relative;
+}
+
+.delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: red;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Valorant Tracker</h1>
+
+<div>
+  <input id="kills" type="number" placeholder="킬">
+  <input id="deaths" type="number" placeholder="데스">
+  <input id="assists" type="number" placeholder="어시스트">
+  <button onclick="addGame()">추가</button>
+</div>
+
+<h2>평균 KDA: <span id="avg">0</span></h2>
+
+<div id="list"></div>
+
+<script>
+let games = JSON.parse(localStorage.getItem("games")) || [];
+
+function save() {
+  localStorage.setItem("games", JSON.stringify(games));
+}
+
+function addGame() {
+  const k = parseInt(kills.value);
+  const d = parseInt(deaths.value);
+  const a = parseInt(assists.value);
+
+  if (isNaN(k) || isNaN(d) || isNaN(a)) {
+    alert("다 입력해");
+    return;
+  }
+
+  const kda = ((k + a) / (d || 1)).toFixed(2);
+
+  games.push({ k, d, a, kda });
+  save();
+  render();
+}
+
+function deleteGame(i) {
+  games.splice(i, 1);
+  save();
+  render();
+}
+
+function render() {
+  list.innerHTML = "";
+
+  let total = 0;
+
+  games.forEach((g, i) => {
+    total += parseFloat(g.kda);
+
+    list.innerHTML += `
+      <div class="card">
+        <div class="delete" onclick="deleteGame(${i})">X</div>
+        <h3>KDA: ${g.kda}</h3>
+        <p>${g.k} / ${g.d} / ${g.a}</p>
+      </div>
+    `;
+  });
+
+  const avg = games.length ? (total / games.length).toFixed(2) : 0;
+  document.getElementById("avg").innerText = avg;
+}
+
+render();
+</script>
+
+</body>
+</html>
