@@ -5,7 +5,9 @@
 <title>KDA Lab</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<div style="background:#1e293b; padding:20px; border-radius:15px; width:420px; margin:auto;">
+  <canvas id="chart"></canvas>
+</div>
 <style>
 body {
   background: #0f172a;
@@ -48,7 +50,9 @@ button {
 }
 
 canvas {
-  margin-top: 20px;
+  max-width: 400px;
+  height: 200px !important;
+  margin: 20px auto;
 }
 </style>
 </head>
@@ -118,14 +122,31 @@ function drawChart() {
   if (chart) chart.destroy();
 
   chart = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: {
       labels: labels,
       datasets: [{
-        label: 'KDA 변화',
+        label: "KDA",
         data: data,
-        tension: 0.3
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 4
       }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: "white" }
+        },
+        y: {
+          ticks: { color: "white" }
+        }
+      }
     }
   });
 }
